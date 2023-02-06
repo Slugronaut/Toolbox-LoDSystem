@@ -1,0 +1,21 @@
+{
+  "name": "com.postegames.lodsystem",
+  "version": "1.0.0",
+  "displayName": "PEGLIB - LoD System",
+  "description": "A set of components for managing level of detail on MonoBehaviours and GameObjects.",
+  "unity": "2022.2",
+  "keywords": [
+    "LoD"
+  ],
+  "author": {
+    "name": "Sluggy",
+    "email": "jcsluggy@gmail.com",
+    "url": "http:/postegames.com"
+  },
+  "dependencies": {
+    "com.fullinspector.rotorzlib": "",
+    "com.postegames.collections": "",
+    "com.postegames.hashedstring": "",
+    "com.postegames.messagedispatcher": ""
+  }
+}

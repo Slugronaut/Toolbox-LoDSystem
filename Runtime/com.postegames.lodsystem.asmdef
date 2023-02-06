@@ -1,0 +1,19 @@
+{
+    "name": "com.postegames.lodsystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:25aa2102d3bf8524c93c1de79079183f",
+        "GUID:e0f58bfe6a703f24a85f9333758706b6",
+        "GUID:7c52243ddb997824ba4d736d17597c55",
+        "GUID:01112215c5eed6a419b30b02a246119d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
