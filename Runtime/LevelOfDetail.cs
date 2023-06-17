@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-
+using Toolbox.Collections;
+using Sirenix.Utilities;
+using System.Linq;
 
 namespace Toolbox.Behaviours
 {
@@ -187,19 +189,22 @@ namespace Toolbox.Behaviours
             if (cou != null)
             {
                 LastTime = time;
-                float dist = Vector3.Distance(myPos, cou.transform.position);
+                //float dist = Vector3.Distance(myPos, cou.transform.position);
+                float dist = (myPos - cou.transform.position).sqrMagnitude;
 
                 //zero is always the 'highest' power level
                 int pow = 0;
-                for (int i = 1; i < PowerModes.Length; i++)
+                var modes = PowerModes;
+                for (int i = 1; i < modes.Length; i++)
                 {
-                    if (dist > PowerModes[i].Distance) pow = i;
+                    float pmDist = modes[i].Distance;
+                    if (dist > pmDist * pmDist) pow = i;
                 }
 
                 if (pow != Power)
                 {
                     Power = pow;
-                    Activate(PowerModes[Power]);
+                    Activate(modes[Power]);
                 }
             }
         }
@@ -216,18 +221,62 @@ namespace Toolbox.Behaviours
 
         public void Activate(Mode mode)
         {
-            int count = mode.GameObjectKeys.Count;
-            for (int i = 0; i < count; i++)
+            var gok = mode.GameObjectKeys;
+            for (int i = 0; i < gok.Count; i++)
                 mode.GameObjectKeys[i].SetActive(mode.GameObjectValues[i]);
 
-            count = mode.BehaviourKeys.Count;
-            for (int i = 0; i < count; i++)
+            var bhk = mode.BehaviourKeys;
+            for (int i = 0; i < bhk.Count; i++)
                 mode.BehaviourKeys[i].enabled = mode.BehaviourValues[i];
 
-            count = mode.Collider3DKeys.Count;
-            for (int i = 0; i < mode.Collider3DKeys.Count; i++)
+            var colk = mode.Collider3DKeys;
+            for (int i = 0; i < colk.Count; i++)
                 mode.Collider3DKeys[i].enabled = mode.Collider3DValues[i];
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="time"></param>
+        public void DelayTimer(float time)
+        {
+            LastTime = Time.time + time;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public void AddGameObject(GameObject gameObject, params bool[] flags)
+        {
+            GameObjects = GameObjects.AddElement(gameObject);
+
+            for(int i = 0; i < flags.Length; i++)
+            {
+                var mode = PowerModes[i];
+                mode.GameObjectKeys.Add(gameObject);
+                mode.GameObjectValues.Add(flags[i]);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public void RemoveGameObject(GameObject gameObject)
+        {
+
+            GameObjects = GameObjects.RemoveElement(gameObject);
+
+            foreach(var mode in PowerModes)
+            {
+                var i = mode.GameObjectKeys.IndexOf(gameObject);
+                mode.GameObjectKeys.RemoveAt(i);
+                mode.GameObjectValues.RemoveAt(i);
+            }
+        }
+
+
     }
 
 
