@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Toolbox.Collections;
-using Toolbox;
 
-namespace PegGames.LoD
+namespace Toolbox.Behaviours
 {
     /// <summary>
     /// Attach this component to an object to mark it as a Center-of-Universe.
