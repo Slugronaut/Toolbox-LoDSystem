@@ -1,0 +1,20 @@
+{
+    "name": "com.postegames.gameobjectlod",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5d2de123429b952439048354a2e815c1",
+        "GUID:01112215c5eed6a419b30b02a246119d",
+        "GUID:e0f58bfe6a703f24a85f9333758706b6",
+        "GUID:7c52243ddb997824ba4d736d17597c55",
+        "GUID:13415da0b68dae24da63ed8e46d7345f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

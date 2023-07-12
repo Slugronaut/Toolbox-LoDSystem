@@ -1,21 +1,23 @@
 {
-  "name": "com.postegames.lodsystem",
+  "name": "com.postegames.gameobjectlod",
   "version": "1.0.0",
-  "displayName": "PEGLIB - LoD System",
-  "description": "A set of components for managing level of detail on MonoBehaviours and GameObjects.",
+  "displayName": "GameObject LoD",
+  "description": "A simple LoD system for GameObjects, Components, and Monobehaviours. Supersedes the original LoDSystem by vastly improving performance.",
   "unity": "2022.2",
   "keywords": [
+    "lod",
     "LoD"
   ],
   "author": {
     "name": "Sluggy",
     "email": "jcsluggy@gmail.com",
-    "url": "http:/postegames.com"
+    "url": "http://postexistence.com/"
   },
   "dependencies": {
-    "com.fullinspector.rotorzlib": "",
-    "com.postegames.collections": "",
-    "com.postegames.hashedstring": "",
-    "com.postegames.messagedispatcher": ""
+	"com.postegames.autocreatable": "",
+	"com.postegames.collections": "",
+	"com.postegames.hashedstring": "",
+	"com.postegames.messagedispatcher": "",
+	"com.postegames.playerloopinjector": ""
   }
 }
