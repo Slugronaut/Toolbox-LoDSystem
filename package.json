@@ -15,6 +15,7 @@
   "dependencies": {
     "com.fullinspector.rotorzlib": "",
     "com.postegames.collections": "",
+    "com.postegames.coroutinehelpers": "",
     "com.postegames.hashedstring": "",
     "com.postegames.messagedispatcher": ""
   }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace Toolbox.Behaviours
+namespace Peg.Systems.LoD
 {
     /// <summary>
     /// Triggers a UnityEvent when a certain distance from any CoU is detected.

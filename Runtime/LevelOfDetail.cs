@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Toolbox.Collections;
-using Sirenix.Utilities;
-using System.Linq;
+using Peg.Util;
 
-namespace Toolbox.Behaviours
+namespace Peg.Systems.LoD
 {
     
     /// <summary>

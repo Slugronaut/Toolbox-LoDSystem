@@ -1,17 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Toolbox.Collections;
+using Peg.Util;
+using UnityEngine.Assertions;
 
-namespace Toolbox.Behaviours
+namespace Peg.Systems.LoD
 {
     /// <summary>
     /// Attach this component to an object to mark it as a Center-of-Universe.
     /// Distances to all CoUs can be obtained through static methods.
     /// 
-    /// TODO: Implement a KD-tree for broad-phase filtering. Only needed for large numbers of objects.
+    /// TODO: Implement a KD-tree for broad-phase filtering. Only needed for large numbers of objects?
     /// </summary>
-    [AddComponentMenu("Toolbox/Common/Center-of-Universe")]
-    public class CenterOfUniverse : Sirenix.OdinInspector.SerializedMonoBehaviour
+    [AddComponentMenu("Peg/System/LoD/Center-of-Universe")]
+    public class CenterOfUniverse : MonoBehaviour
     {
         #region Instance Members
         public HashedString GroupId
@@ -65,13 +66,11 @@ namespace Toolbox.Behaviours
         
         void AddToMultiverse(int groupId)
         {
-            List<CenterOfUniverse> list = null;
-            if (Multiverse.TryGetValue(groupId, out list))
+            if (Multiverse.TryGetValue(groupId, out List<CenterOfUniverse> list))
                 list.Add(this);
             else
             {
-                list = new List<CenterOfUniverse>();
-                list.Add(this);
+                list = new(1) { this };
                 Multiverse[groupId] = list;
             }
 
@@ -90,7 +89,7 @@ namespace Toolbox.Behaviours
 
         #region Static Members
 
-        static HashMap<int, List<CenterOfUniverse>> Multiverse = new HashMap<int, List<CenterOfUniverse>>();
+        static readonly HashMap<int, List<CenterOfUniverse>> Multiverse = new();
         static List<CenterOfUniverse> list = null;
         static float xMin, yMin, zMin, xMax, yMax, zMax;
 
@@ -251,6 +250,21 @@ namespace Toolbox.Behaviours
             }
 
             return list[bestMatchIndex];
+        }
+
+        /// <summary>
+        /// Returns a copy of the list of all center-of-universes for the group id.
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        public static void GetAll(int group, ref List<CenterOfUniverse> output)
+        {
+            Assert.IsNotNull(output);
+            output.Clear();
+            if (Multiverse.Count < 1) return;
+            if (!Multiverse.TryGetValue(group, out List<CenterOfUniverse> list)) return;
+            for (int i = 0; i < list.Count; i++)
+                output.Add(list[i]);
         }
 
         /// <summary>

@@ -3,10 +3,9 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
-using Toolbox.Behaviours;
 using FullInspector.Rotorz.ReorderableList;
 
-namespace Toolbox.ToolboxEditor
+namespace Peg.Systems.LoD.Editor
 {
     /// <summary>
     /// Helper for displaying power modes using Rotorz
