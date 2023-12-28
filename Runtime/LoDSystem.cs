@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Peg.AutoCreate;
+using Peg.MessageDispatcher;
 using Peg.UpdateSystem;
 using UnityEngine;
 

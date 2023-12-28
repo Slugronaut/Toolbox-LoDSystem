@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Peg.Util;
+using Peg.Collections;
 
 namespace Peg.Systems.LoD
 {
