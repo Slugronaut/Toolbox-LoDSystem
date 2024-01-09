@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using Peg.AutoCreate;
-using Peg.MessageDispatcher;
 using Peg.UpdateSystem;
 using UnityEngine;
 
 namespace Peg.Systems.LoD
 {
     /// <summary>
-    /// 
+    /// Central system for checking LoDs. Each LoD behaviour can register with this central object and then be ticked on a regular interval
+    /// to check for distance thresholds.
     /// </summary>
     [AutoCreate(CreationActions.DeserializeSingletonData)]
     public class LoDSystem : Updatable
@@ -21,7 +21,7 @@ namespace Peg.Systems.LoD
 
         List<GameObjectLod> GoLods;
         List<BehaviourLod> BLods;
-        float LastTime;
+        double LastTime;
         HashedString HashedCoUGroupId;
 
 
@@ -36,20 +36,10 @@ namespace Peg.Systems.LoD
             GoLods = new(32);
             BLods = new(32);
             HashedCoUGroupId = new HashedString(CoUGroupId);//because serialization doesn't update the hash value itself
-            GlobalMessagePump.Instance.AddListener<GameObjectLod.SpawnedMsg>(HandleSpawnedLod);
-            GlobalMessagePump.Instance.AddListener<GameObjectLod.DespawnedMsg>(HandleDespawnedLod);
-
-            GlobalMessagePump.Instance.AddListener<BehaviourLod.SpawnedMsg>(HandleSpawnedLod);
-            GlobalMessagePump.Instance.AddListener<BehaviourLod.DespawnedMsg>(HandleDespawnedLod);
         }
 
         public void AutoDestroy()
         {
-            GlobalMessagePump.Instance.RemoveListener<GameObjectLod.SpawnedMsg>(HandleSpawnedLod);
-            GlobalMessagePump.Instance.RemoveListener<GameObjectLod.DespawnedMsg>(HandleDespawnedLod);
-
-            GlobalMessagePump.Instance.RemoveListener<BehaviourLod.SpawnedMsg>(HandleSpawnedLod);
-            GlobalMessagePump.Instance.RemoveListener<BehaviourLod.DespawnedMsg>(HandleDespawnedLod);
         }
 
         public override void Awake()
@@ -69,8 +59,9 @@ namespace Peg.Systems.LoD
 
         public override void Update()
         {
-            if (Time.time - LastTime < Frequency) return;
+            if (Time.timeAsDouble - LastTime < Frequency) return;
             LastTime = Time.time;
+
 
             var CoU = CenterOfUniverse.GetClosest(HashedCoUGroupId.Hash, Vector3.zero);
             if (CoU == null) return;
@@ -108,24 +99,24 @@ namespace Peg.Systems.LoD
         #endregion
 
 
-        void HandleSpawnedLod(GameObjectLod.SpawnedMsg msg)
+        public void RegisterLod(GameObjectLod target)
         {
-            GoLods.Add(msg.Target);
+            GoLods.Add(target);
         }
 
-        void HandleDespawnedLod(GameObjectLod.DespawnedMsg msg)
+        public void UnregisterLod(GameObjectLod target)
         {
-            GoLods.Remove(msg.Target);
+            GoLods.Remove(target);
         }
 
-        void HandleSpawnedLod(BehaviourLod.SpawnedMsg msg)
+        public void RegisterLod(BehaviourLod target)
         {
-            BLods.Add(msg.Target);
+            BLods.Add(target);
         }
 
-        void HandleDespawnedLod(BehaviourLod.DespawnedMsg msg)
+        public void UnregisterLod(BehaviourLod target)
         {
-            BLods.Remove(msg.Target);
+            BLods.Remove(target);
         }
 
         /// <summary>

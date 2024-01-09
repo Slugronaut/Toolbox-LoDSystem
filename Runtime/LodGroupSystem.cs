@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Peg.Systems.LoD
 {
     /// <summary>
-    /// 
+    /// Processes object LoDs based on a series of bands where each band should be ticked with a different frequency.
     /// </summary>
     [AutoCreate(CreationActions.DeserializeSingletonData)]
     public class LodGroupSystem : Updatable
@@ -103,6 +103,7 @@ namespace Peg.Systems.LoD
             if (msg.Target.GroupId.Hash != HashedCoUGroupId.Hash)
                 return;
 
+            Debug.Log($"Matched Spawned: {msg.Target.GroupId.Hash} / {HashedCoUGroupId.Hash} ");
             Members.Add(msg.Target);
             GlobalCoroutine.Start(WaitForCoU(msg.Target));
         }

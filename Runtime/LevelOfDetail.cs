@@ -28,10 +28,13 @@ namespace Peg.Systems.LoD
         public Behaviour[] Behaviours;
         public Collider[] Colliders3d;
         public Mode[] PowerModes = new Mode[0]; //need to due this due to Rotorz being stupid
+        Transform Trans;
 
         int Power = 0;
         float LastTime;
-        
+
+        public Mode CurrentMode => PowerModes[Power];
+
 
         /// <summary>
         /// Stores the state of a single mode of operation
@@ -166,8 +169,12 @@ namespace Peg.Systems.LoD
             Gizmos.color = Color.Lerp(Color.yellow, Color.grey, alpha);
             Gizmos.DrawWireCube(transform.position, Vector3.one);
         }
-        #endif
-        
+#endif
+
+        private void Awake()
+        {
+            Trans = transform;
+        }
 
         void OnEnable()
         {
@@ -187,7 +194,6 @@ namespace Peg.Systems.LoD
             if (cou != null)
             {
                 LastTime = time;
-                //float dist = Vector3.Distance(myPos, cou.transform.position);
                 float dist = (myPos - cou.transform.position).sqrMagnitude;
 
                 //zero is always the 'highest' power level

@@ -1,5 +1,4 @@
 using Peg.Collections;
-using Peg.MessageDispatcher;
 using UnityEngine;
 
 
@@ -12,18 +11,6 @@ namespace Peg.Systems.LoD
     [AddComponentMenu("Peg/System/LoD/Behaviour LoD")]
     public class BehaviourLod : MonoBehaviour
     {
-
-        public class SpawnedMsg : TargetMessage<BehaviourLod, SpawnedMsg>
-        {
-            public SpawnedMsg(BehaviourLod trackable) : base(trackable) { }
-            public static SpawnedMsg Shared = new(null);
-        }
-
-        public class DespawnedMsg : TargetMessage<BehaviourLod, SpawnedMsg>
-        {
-            public DespawnedMsg(BehaviourLod trackable) : base(trackable) { }
-            public static DespawnedMsg Shared = new(null);
-        }
 
         [Tooltip("The distance threshold at which the GameObjects list is switched on.")]
         public float DistanceThresholdMin;
@@ -46,7 +33,7 @@ namespace Peg.Systems.LoD
         /// </summary>
         public void OnEnable()
         {
-            GlobalMessagePump.Instance.PostMessage(new SpawnedMsg(this));// SpawnedMsg.Shared.Change(this));
+            LoDSystem.Instance.RegisterLod(this);
         }
 
         /// <summary>
@@ -54,7 +41,7 @@ namespace Peg.Systems.LoD
         /// </summary>
         public void OnDisable()
         {
-            GlobalMessagePump.Instance.PostMessage(new DespawnedMsg(this));// DespawnedMsg.Shared.Change(this));
+            LoDSystem.Instance.UnregisterLod(this);
         }
 
         /// <summary>
