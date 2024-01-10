@@ -48,6 +48,19 @@ namespace Peg.Systems.LoD
             }
         }
 
+        public class HashComparerer : IEqualityComparer<BoxedIntHash>
+        {
+            bool IEqualityComparer<BoxedIntHash>.Equals(BoxedIntHash x, BoxedIntHash y)
+            {
+                return x.Equals(y);
+            }
+
+            int IEqualityComparer<BoxedIntHash>.GetHashCode(BoxedIntHash obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
 
         #region Instance Members
         public HashedString GroupId
@@ -108,12 +121,12 @@ namespace Peg.Systems.LoD
         void AddToMultiverse(int groupId)
         {
             var boxedGroupId = new BoxedIntHash(groupId);
-            if (Multiverse.TryGetValue(boxedGroupId, out List<CenterOfUniverse> list))
-                list.Add(this);
+            if (Multiverse.TryGetValue(boxedGroupId, out var tempList))
+                tempList.Add(this);
             else
             {
-                list = new(1) { this };
-                Multiverse[boxedGroupId] = list;
+                tempList = new(1) { this };
+                Multiverse[boxedGroupId] = tempList;
             }
 
         }
@@ -121,19 +134,18 @@ namespace Peg.Systems.LoD
         void RemoveFromMultiverse(int groupId)
         {
             var boxedGroupId = new BoxedIntHash(groupId);
-            if (Multiverse.TryGetValue(boxedGroupId, out List<CenterOfUniverse> list))
+            if (Multiverse.TryGetValue(boxedGroupId, out var tempList))
             {
-                list.Remove(this);
-                if (list.Count < 1) Multiverse.Remove(boxedGroupId);
+                tempList.Remove(this);
+                if (tempList.Count < 1) Multiverse.Remove(boxedGroupId);
             }
         }
         #endregion
 
 
         #region Static Members
-
-        static readonly HashMap<BoxedIntHash, List<CenterOfUniverse>> Multiverse = new();
-        static List<CenterOfUniverse> list = null;
+        static readonly HashMap<BoxedIntHash, List<CenterOfUniverse>> Multiverse = new(new HashComparerer());
+        //static List<CenterOfUniverse> TempList = new List<CenterOfUniverse>();
         static float xMin, yMin, zMin, xMax, yMax, zMax;
 
 
@@ -217,14 +229,14 @@ namespace Peg.Systems.LoD
         public static CenterOfUniverse GetClosest(int groupId, Vector3 point)
         {
             if (Multiverse.Count < 1) return null;
-            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out List<CenterOfUniverse> list)) return null;
+            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out var tempList)) return null;
 
             int bestMatchIndex = 0;
             float bestMatchMag = float.MaxValue;
 
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < tempList.Count; i++)
             {
-                float mag = (list[i].transform.position - point).sqrMagnitude;
+                float mag = (tempList[i].transform.position - point).sqrMagnitude;
                 if (mag <= bestMatchMag)
                 {
                     bestMatchMag = mag;
@@ -232,7 +244,7 @@ namespace Peg.Systems.LoD
                 }
             }
 
-            return list[bestMatchIndex];
+            return tempList[bestMatchIndex];
         }
 
         /// <summary>
@@ -277,14 +289,14 @@ namespace Peg.Systems.LoD
         public static CenterOfUniverse GetFurthest(int groupId, Vector3 point)
         {
             if (Multiverse.Count < 1) return null;
-            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out List<CenterOfUniverse> list)) return null;
+            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out var tempList)) return null;
 
             int bestMatchIndex = 0;
             float bestMatchMag = 0;
 
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < tempList.Count; i++)
             {
-                float mag = (list[i].transform.position - point).sqrMagnitude;
+                float mag = (tempList[i].transform.position - point).sqrMagnitude;
                 if (mag >= bestMatchMag)
                 {
                     bestMatchMag = mag;
@@ -292,7 +304,7 @@ namespace Peg.Systems.LoD
                 }
             }
 
-            return list[bestMatchIndex];
+            return tempList[bestMatchIndex];
         }
 
         /// <summary>
@@ -305,9 +317,9 @@ namespace Peg.Systems.LoD
             Assert.IsNotNull(output);
             output.Clear();
             if (Multiverse.Count < 1) return;
-            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out List<CenterOfUniverse> list)) return;
-            for (int i = 0; i < list.Count; i++)
-                output.Add(list[i]);
+            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out var tempList)) return;
+            for (int i = 0; i < tempList.Count; i++)
+                output.Add(tempList[i]);
         }
 
         /// <summary>
@@ -360,9 +372,9 @@ namespace Peg.Systems.LoD
         public static Vector3 GetCentroid(int groupId)
         {
             if (Multiverse.Count < 1) return Vector3.zero;
-            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out list)) throw new UnityException("No group id '" + groupId + "' available.");
+            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out var tempList)) throw new UnityException("No group id '" + groupId + "' available.");
 
-            var min = list[0].transform.position;
+            var min = tempList[0].transform.position;
             var max = min;
             xMin = min.x;
             yMin = min.y;
@@ -372,9 +384,9 @@ namespace Peg.Systems.LoD
             yMax = max.y;
             zMax = max.z;
 
-            for (int i = 1; i < list.Count; i++)
+            for (int i = 1; i < tempList.Count; i++)
             {
-                Vector3 pos = list[i].transform.position;
+                Vector3 pos = tempList[i].transform.position;
                 if (pos.x < xMin) xMin = pos.x;
                 if (pos.y < yMin) yMin = pos.y;
                 if (pos.z < zMin) zMin = pos.z;
@@ -422,13 +434,13 @@ namespace Peg.Systems.LoD
         public static Vector3 GetAveragePosition(int groupId)
         {
             if (Multiverse.Count < 1) return Vector3.zero;
-            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out list)) throw new UnityException("No group id '" + groupId + "' available.");
+            if (!Multiverse.TryGetValue(new BoxedIntHash(groupId), out var tempList)) throw new UnityException("No group id '" + groupId + "' available.");
 
-            var avg = list[0].transform.position;
-            for (int i = 1; i < list.Count; i++)
-                avg += list[i].transform.position;
+            var avg = tempList[0].transform.position;
+            for (int i = 1; i < tempList.Count; i++)
+                avg += tempList[i].transform.position;
             
-            return avg / list.Count;
+            return avg / tempList.Count;
         }
 
         
